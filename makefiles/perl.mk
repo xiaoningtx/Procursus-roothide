@@ -7,7 +7,7 @@ PERL_MAJOR   := 5.32
 PERL_VERSION := $(PERL_MAJOR).1
 PERL_API_V   := $(PERL_MAJOR).0
 PERL_CROSS_V := 1.3.5
-DEB_PERL_V   ?= $(PERL_VERSION)
+DEB_PERL_V   ?= $(PERL_VERSION)-1
 
 export PERL_MAJOR
 
@@ -18,7 +18,6 @@ perl-setup: setup
 	$(call EXTRACT_TAR,perl-$(PERL_VERSION).tar.gz,perl-$(PERL_VERSION),perl)
 	chmod -R +w $(BUILD_WORK)/perl
 	$(call EXTRACT_TAR,perl-cross-$(PERL_CROSS_V).tar.gz,perl-cross-$(PERL_CROSS_V),perl,1)
-	sed -i 's|#  include <poll.h>|#  include <sys/poll.h>|g' $(BUILD_WORK)/perl/dist/IO/poll.h
 	sed -i 's/readelf --syms/nm -g/g' $(BUILD_WORK)/perl/cnf/configure_type.sh
 	sed -i 's/readelf/nm/g' $(BUILD_WORK)/perl/cnf/configure__f.sh
 	sed -i 's/readelf/nm/g' $(BUILD_WORK)/perl/cnf/configure_tool.sh
@@ -34,6 +33,8 @@ perl-setup: setup
 	sed -i "s/&& $$^O ne 'darwin' //" $(BUILD_WORK)/perl/ext/Errno/Errno_pm.PL
 	sed -i "s/$$^O eq 'linux'/\$$Config{gccversion} ne ''/" $(BUILD_WORK)/perl/ext/Errno/Errno_pm.PL
 	sed -i 's/--sysroot=$$sysroot/-isysroot $$sysroot -arch $(MEMO_ARCH) $(PLATFORM_VERSION_MIN)/' $(BUILD_WORK)/perl/cnf/configure_tool.sh
+	sed -i 's/-L\*|-R\*|-Wl,-R\*)/-L\*|-R\*|-Wl,-R\*|-l\*)/' $(BUILD_WORK)/perl/cnf/configure_tool.sh
+	sed -i 's/setenv $$sym "$$p"/setenv $$sym "REENTRANT_PROTO_$$p"/' $(BUILD_WORK)/perl/cnf/configure_thrd.sh
 	touch $(BUILD_WORK)/perl/cnf/hints/darwin
 	echo -e "# Linux syscalls\n\
 	d_voidsig='undef'\n\
@@ -54,7 +55,7 @@ perl: perl-setup
 	CC='$(CC)' AR='$(AR)' NM='$(NM)' OBJDUMP='objdump' \
 	HOSTCFLAGS='-DPERL_CORE -DUSE_CROSS_COMPILE -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 $(CFLAGS_FOR_BUILD)' \
 	HOSTLDFLAGS='$(LDFLAGS_FOR_BUILD)' \
-	CFLAGS='-DPERL_DARWIN -DPERL_USE_SAFE_PUTENV -DTIME_HIRES_CLOCKID_T -DLIBIOSEXEC_INTERNAL=1 $(patsubst -flto=thin,,$(CFLAGS))' \
+	CFLAGS='-DPERL_DARWIN -DPERL_USE_SAFE_PUTENV -DTIME_HIRES_CLOCKID_T $(patsubst -flto=thin,,$(CFLAGS))' \
 	LDFLAGS='$(patsubst -flto=thin,,$(LDFLAGS))' ./configure \
 		--build=$$($(BUILD_MISC)/config.guess) \
 		--target=$(GNU_HOST_TRIPLE) \
