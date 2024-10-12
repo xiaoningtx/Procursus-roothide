@@ -34,7 +34,7 @@ glib2.0:
 	@echo "Using previously built glib2.0."
 else
 glib2.0: glib2.0-setup gettext pcre libffi
-	cd $(BUILD_WORK)/glib2.0/build && meson \
+	cd $(BUILD_WORK)/glib2.0/build && ~/repos/meson-0.61.2/meson.py \
 		--cross-file cross.txt \
 		-Diconv=auto \
 		-Dbsymbolic_functions=false \
