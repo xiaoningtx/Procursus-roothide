@@ -9,7 +9,6 @@ DEB_TECKIT_V   ?= $(TECKIT_VERSION)
 teckit-setup: setup
 	$(call GITHUB_ARCHIVE,silnrsi,teckit,$(TECKIT_VERSION),refs/tags/v$(TECKIT_VERSION))
 	$(call EXTRACT_TAR,teckit-$(TECKIT_VERSION).tar.gz,teckit-$(TECKIT_VERSION),teckit)
-	$(call DO_PATCH,teckit,teckit,-p1)
 
 ifneq ($(wildcard $(BUILD_WORK)/teckit/.build_complete),)
 teckit:

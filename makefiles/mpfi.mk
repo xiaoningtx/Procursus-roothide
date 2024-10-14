@@ -14,7 +14,6 @@ mpfi-setup: setup
 	$(call GIT_CLONE,https://gitlab.inria.fr/mpfi/mpfi.git,master,mpfi)
 	find $(BUILD_WORK)/mpfi \( ! -regex '.*/\..*' \) -type f -exec dos2unix -f {} \;
 	touch $(BUILD_WORK)/mpfi/.CRLFtoLF_done
-	#$(call DO_PATCH,mpfi,mpfi,-p1)
 endif
 
 ifneq ($(wildcard $(BUILD_WORK)/mpfi/.build_complete),)

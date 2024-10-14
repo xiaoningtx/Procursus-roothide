@@ -9,7 +9,6 @@ DEB_POTRACE_V   ?= $(POTRACE_VERSION)
 potrace-setup: setup
 	$(call DOWNLOAD_FILES,$(BUILD_SOURCE),https://potrace.sourceforge.net/download/$(POTRACE_VERSION)/potrace-$(POTRACE_VERSION).tar.gz)
 	$(call EXTRACT_TAR,potrace-$(POTRACE_VERSION).tar.gz,potrace-$(POTRACE_VERSION),potrace)
-	$(call DO_PATCH,potrace,potrace,-p1)
 
 ifneq ($(wildcard $(BUILD_WORK)/potrace/.build_complete),)
 potrace:

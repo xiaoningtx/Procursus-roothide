@@ -9,7 +9,6 @@ DEB_ZZIPLIB_V   ?= $(ZZIPLIB_VERSION)
 zziplib-setup: setup
 	$(call GITHUB_ARCHIVE,gdraheim,zziplib,$(ZZIPLIB_VERSION),refs/tags/v$(ZZIPLIB_VERSION))
 	$(call EXTRACT_TAR,zziplib-$(ZZIPLIB_VERSION).tar.gz,zziplib-$(ZZIPLIB_VERSION),zziplib)
-	$(call DO_PATCH,zziplib,zziplib,-p1)
 	mkdir -p $(BUILD_WORK)/zziplib/build
 
 ifneq ($(wildcard $(BUILD_WORK)/zziplib/.build_complete),)
