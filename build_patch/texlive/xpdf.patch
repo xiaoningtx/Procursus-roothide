@@ -28,7 +28,7 @@ index 32e72048..af20ce93 100755
 @@ -6399,6 +6400,11 @@ else
    RANLIB="$ac_cv_prog_RANLIB"
  fi
-
+ 
 +if test -n "$ac_tool_prefix"; then
 +  host_ar="${ac_tool_prefix}ar"
 +  HOST_AR=$host_ar
