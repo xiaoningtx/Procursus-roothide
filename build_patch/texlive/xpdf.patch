@@ -1,0 +1,39 @@
+diff --git a/libs/xpdf/Makefile.in b/libs/xpdf/Makefile.in
+index 2bb75feb..0a573ba3 100644
+--- a/libs/xpdf/Makefile.in
++++ b/libs/xpdf/Makefile.in
+@@ -102,7 +102,7 @@ CONFIG_HEADER = aconf.h
+ CONFIG_CLEAN_FILES = aconf2.h
+ CONFIG_CLEAN_VPATH_FILES =
+ LIBRARIES = $(noinst_LIBRARIES)
+-AR = ar
++AR = @HOST_AR@
+ ARFLAGS = cru
+ AM_V_AR = $(am__v_AR_@AM_V@)
+ am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
+diff --git a/libs/xpdf/configure b/libs/xpdf/configure
+index 32e72048..af20ce93 100755
+--- a/libs/xpdf/configure
++++ b/libs/xpdf/configure
+@@ -746,7 +746,8 @@ PACKAGE_TARNAME
+ PACKAGE_NAME
+ PATH_SEPARATOR
+ SHELL
+-am__quote'
++am__quote
++HOST_AR'
+ ac_subst_files=''
+ ac_user_opts='
+ enable_option_checking
+@@ -6399,6 +6400,11 @@ else
+   RANLIB="$ac_cv_prog_RANLIB"
+ fi
+
++if test -n "$ac_tool_prefix"; then
++  host_ar="${ac_tool_prefix}ar"
++  HOST_AR=$host_ar
++fi
++
+ { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether ln -s works" >&5
+ printf %s "checking whether ln -s works... " >&6; }
+ LN_S=$as_ln_s

@@ -28,7 +28,7 @@ texlive-setup: setup
 	$(call GIT_CLONE,https://github.com/TeX-Live/texlive-source.git,tags/texlive-$(TEXLIVE_VERSION),texlive)
 	find $(BUILD_WORK)/texlive \( ! -regex '.*/\..*' \) -type f -exec dos2unix -f {} \;
 	touch $(BUILD_WORK)/texlive/.CRLFtoLF_done
-	#$(call DO_PATCH,texlive,texlive,-p1)
+	$(call DO_PATCH,texlive,texlive,-p1)
 endif
 
 ifneq ($(wildcard $(BUILD_WORK)/texlive/.build_complete),)
