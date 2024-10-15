@@ -6,6 +6,20 @@ SUBPROJECTS   += texlive
 TEXLIVE_VERSION := 2024.2
 DEB_TEXLIVE_V   ?= $(TEXLIVE_VERSION)
 
+undefine CXX
+undefine CC
+undefine CPP
+undefine AR
+undefine LD
+undefine RANLIB
+undefine STRINGS
+undefine STRIP
+undefine I_N_T
+undefine NM
+undefine LIPO
+undefine OTOOL
+undefine LIBTOOL
+
 ifneq ($(wildcard $(BUILD_WORK)/texlive/.CRLFtoLF_done),)
 texlive-setup: setup
 	@echo "texlive already converted to LF. "
@@ -33,7 +47,7 @@ texlive: texlive-setup cairo fontconfig freetype graphite2 harfbuzz icu4c libgd 
         --with-system-gd --with-system-potrace \
         --with-system-freetype2 --with-system-libpng \
         --with-system-libpaper --with-system-zlib \
-        --disable-xindy
+        --disable-xindy CXXFLAGS='-std=c++17'
 	+$(MAKE) -C $(BUILD_WORK)/texlive/build
 	+$(MAKE) -C $(BUILD_WORK)/texlive install \
 		DESTDIR=$(BUILD_STAGE)/texlive
