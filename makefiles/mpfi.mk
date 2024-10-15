@@ -20,7 +20,7 @@ ifneq ($(wildcard $(BUILD_WORK)/mpfi/.build_complete),)
 mpfi:
 	@echo "Using previously built mpfi."
 else
-mpfi: mpfi-setup
+mpfi: mpfi-setup mpfr4
 	cd $(BUILD_WORK)/mpfi && ./autogen.sh && ./configure -C \
 		$(DEFAULT_CONFIGURE_FLAGS)
 	+$(MAKE) -C $(BUILD_WORK)/mpfi
