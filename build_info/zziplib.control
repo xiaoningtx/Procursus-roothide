@@ -1,21 +1,18 @@
-# Please populate relevant fields and remove unneeded ones
-# (including this comment!) before building packages or
-# making a pull request.
-# 
-# Keep @DEB_ZZIPLIB_V@, @DEB_ARCH@ and @DEB_MAINTAINER@ intact,
-# these are populated at build time.
-#
-# If you need to write a platform-specific control file,
-# append the platform to the filename as an extension
-# e.g. zziplib.control.macosx
-#
 Package: zziplib
 Version: @DEB_ZZIPLIB_V@
 Architecture: @DEB_ARCH@
 Maintainer: @DEB_MAINTAINER@
-Author: 
+Author: Tomi Ollila, Guido Draheim
 Depends:
-Section: 
-Priority:
-Homepage:
-Description:
+Section: devel
+Priority: optional
+Homepage: https://github.com/gdraheim
+Description: library providing read access on ZIP-archives - development
+    The zziplib library is intentionally lightweight, it offers the ability
+    to easily extract data from files archived in a single zip file.
+    Applications can bundle files into a single zip archive and access them.
+    The implementation is based only on the (free) subset of compression
+    with the zlib algorithm which is actually used by the zip/unzip tools.
+    .
+    This package contains the header files and static library needed to
+    compile applications that use zziplib.
