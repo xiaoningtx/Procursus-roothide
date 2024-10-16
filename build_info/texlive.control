@@ -1,21 +1,12 @@
-# Please populate relevant fields and remove unneeded ones
-# (including this comment!) before building packages or
-# making a pull request.
-# 
-# Keep @DEB_TEXLIVE_V@, @DEB_ARCH@ and @DEB_MAINTAINER@ intact,
-# these are populated at build time.
-#
-# If you need to write a platform-specific control file,
-# append the platform to the filename as an extension
-# e.g. texlive.control.macosx
-#
 Package: texlive
 Version: @DEB_TEXLIVE_V@
 Architecture: @DEB_ARCH@
 Maintainer: @DEB_MAINTAINER@
-Author: 
-Depends:
-Section: 
-Priority:
-Homepage:
+Depends: libcairo2, fontconfig, libfreetype6, libgraphite2-3,
+    libharfbuz-dev, icu-devtools, libgd3, libgmp10, libpixman1-0,
+    libpaper1, libpng16-16, libx11-6, libxaw7, libmpfi-dev,
+    libmpfr6, potrace, teckit, libz-ng2, zziplib
+Section: tex
+Priority: optional
+Homepage: http://www.tug.org/texlive/
 Description:
