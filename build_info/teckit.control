@@ -3,7 +3,7 @@ Version: @DEB_TECKIT_V@
 Architecture: @DEB_ARCH@
 Maintainer: @DEB_MAINTAINER@
 Author: Jonathan Kew
-Depends: zlib-ng
+Depends: libz-ng2
 Section: devel
 Priority: optional
 Homepage: https://github.com/silnrsi/teckit
