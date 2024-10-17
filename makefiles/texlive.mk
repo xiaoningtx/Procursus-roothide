@@ -21,7 +21,7 @@ ifneq ($(wildcard $(BUILD_WORK)/texlive/.build_complete),)
 texlive:
 	@echo "Using previously built texlive."
 else
-texlive: texlive-setup cairo fontconfig freetype graphite2 harfbuzz icu4c libgd libgmp10 libpixman libpaper libpng16 libx11 libxaw mpfi mpfr4 potrace teckit zlib-ng zziplib
+texlive: texlive-setup cairo fontconfig freetype graphite2 harfbuzz icu4c libgd libgmp10 libpixman libpaper libpng16 libx11 libxaw libmpfi mpfr4 potrace teckit zlib-ng zziplib
 
 	# using the target AR instead of host AR
 	sed -i "s|AR = ar|AR = @AR@|" $(BUILD_WORK)/texlive/libs/xpdf/Makefile.in
