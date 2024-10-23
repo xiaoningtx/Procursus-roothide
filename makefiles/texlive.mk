@@ -7,6 +7,7 @@ TEXLIVE_VERSION := 2024.2
 DEB_TEXLIVE_V   ?= $(TEXLIVE_VERSION)
 
 TLROOT=$(BUILD_STAGE)/texlive$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/share/texmf-dist
+ORIGINAL_BIN_DIR=$(BUILD_STAGE)/texlive$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/bin
 TEXLIVE_INSTALL_ENV_NOCHECK=1
 
 ifneq ($(wildcard $(BUILD_WORK)/texlive/.CRLFtoLF_done),)
@@ -61,7 +62,7 @@ texlive: texlive-setup cairo fontconfig freetype graphite2 harfbuzz icu4c libgd 
 		--with-system-freetype2 --with-system-libpng \
 		--with-system-libpaper --with-system-zlib \
 		--disable-xindy CXXFLAGS='-std=c++17'
-	
+
 	# using the host web2c/web2c for cross building
 	rm -rf $(BUILD_WORK)/texlive/build/texk/web2c/web2c
 	mkdir -p $(BUILD_WORK)/texlive/build/texk/web2c
@@ -75,17 +76,23 @@ texlive: texlive-setup cairo fontconfig freetype graphite2 harfbuzz icu4c libgd 
 		DESTDIR=$(BUILD_STAGE)/texlive
 
 	# create a working installation
-	$(BUILD_WORK)/texlive/installer/install-tl --no-interaction \
+	TEXLIVE_INSTALL_ENV_NOCHECK=1 TEXLIVE_INSTALL_NO_WELCOME=1 \
+		$(BUILD_WORK)/texlive/installer/install-tl --no-interaction \
 		-custom-bin $(BUILD_STAGE)/texlive$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/bin \
-		-texuserdir /var/mobile -texdir $(TLROOT) -scheme scheme-minimal
+		-texdir $(TLROOT) -scheme scheme-minimal
 
 	# fix what the installer did 'cause it sucks
 	rm -f $(TLROOT)/bin/custom/*
 	cd $(TLROOT)/bin/custom/ && \
-		for orig_file_path in $(BUILD_STAGE)/texlive$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/bin/*; do \
+		for orig_file_path in $(ORIGINAL_BIN_DIR)/*; do \
 			file_name=$$(basename -- $$orig_file_path); \
 			if [ -L "$$orig_file_path" ]; then \
-				ln -s $$(realpath --relative-to=. "$$orig_file_path") $$file_name; \
+				real_orig_file_path=$$(realpath $$orig_file_path); \
+				if [ "$$(dirname -- $$real_orig_file_path)" = "$(ORIGINAL_BIN_DIR)" ]; then \
+					cp -a $$orig_file_path .; \
+				else \
+					ln -s $$(realpath --relative-to=. "$$orig_file_path") $$file_name; \
+				fi \
 			else \
 				cp -a $$orig_file_path .; \
 			fi \
