@@ -6,7 +6,7 @@ SUBPROJECTS   += texlive
 TEXLIVE_VERSION := 2024.2
 DEB_TEXLIVE_V   ?= $(TEXLIVE_VERSION)
 
-TLROOT=$(BUILD_STAGE)/texlive$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/share/texmf-dist
+TLROOT=$(BUILD_STAGE)/texlive$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/share/texlive
 ORIGINAL_BIN_DIR=$(BUILD_STAGE)/texlive$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/bin
 TEXLIVE_INSTALL_ENV_NOCHECK=1
 
@@ -37,6 +37,8 @@ texlive: texlive-setup cairo fontconfig freetype graphite2 harfbuzz icu4c libgd 
 	# when cross installing we must use build binaries instead of host ones
 	sed -i 's|my $$plat_bindir = "$$TEXDIR/bin/$$vars{'"'"'this_platform'"'"'}"|my $$plat_bindir = ""|' $(BUILD_WORK)/texlive/installer/install-tl
 
+	# build some tools explicitly for build (otherwise texlive explodes):
+	# 1 - configure for build
 	mkdir -p $(BUILD_WORK)/texlive/host
 	cd $(BUILD_WORK)/texlive/host && \
 		CC= CXX= CPP= AR= LD= RANLIB= STRINGS= STRIP= I_N_T= NM= \
@@ -44,12 +46,16 @@ texlive: texlive-setup cairo fontconfig freetype graphite2 harfbuzz icu4c libgd 
 		-C $(BUILD_CONFIGURE_FLAGS) --disable-native-texlive-build \
 		--disable-xindy --disable-all-pkgs --without-x \
 		--enable-web2c --with-system-icu
+	# 2 - make for build
 	$(MAKE) -C $(BUILD_WORK)/texlive/host
-	
+
+	# 3 - copy the result where we need it
 	mkdir -p $(BUILD_WORK)/texlive/host/bin
 	cp $(BUILD_WORK)/texlive/host/texk/web2c/himktables \
 		$(BUILD_WORK)/texlive/host/bin/
 
+	# finally build texlive for host
+	# 1 - configure for host
 	mkdir -p $(BUILD_WORK)/texlive/build
 	cd $(BUILD_WORK)/texlive/build && ../configure -C \
 		$(DEFAULT_CONFIGURE_FLAGS) --disable-native-texlive-build \
@@ -61,18 +67,23 @@ texlive: texlive-setup cairo fontconfig freetype graphite2 harfbuzz icu4c libgd 
 		--with-system-gd --with-system-potrace \
 		--with-system-freetype2 --with-system-libpng \
 		--with-system-libpaper --with-system-zlib \
-		--disable-xindy CXXFLAGS='-std=c++17'
+		--disable-xindy --with-banner-add='/iOS' \
+		--datarootdir=$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/share/texlive \
+		CXXFLAGS='-std=c++17'
 
 	# using the host web2c/web2c for cross building
 	rm -rf $(BUILD_WORK)/texlive/build/texk/web2c/web2c
 	mkdir -p $(BUILD_WORK)/texlive/build/texk/web2c
 	cp -ar $(BUILD_WORK)/texlive/host/texk/web2c/web2c \
 		$(BUILD_WORK)/texlive/build/texk/web2c/
-	
+
+	# 2 - make for host
 	PATH="$$PATH:$(BUILD_WORK)/texlive/host/bin" \
 	$(MAKE) -C $(BUILD_WORK)/texlive/build
-	
-	$(MAKE) -C $(BUILD_WORK)/texlive/build install \
+
+	# 3 - make install strip for host
+	rm -rf $(BUILD_STAGE)/texlive
+	$(MAKE) -C $(BUILD_WORK)/texlive/build world \
 		DESTDIR=$(BUILD_STAGE)/texlive
 
 	# create a working installation
@@ -81,7 +92,7 @@ texlive: texlive-setup cairo fontconfig freetype graphite2 harfbuzz icu4c libgd 
 		-custom-bin $(BUILD_STAGE)/texlive$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/bin \
 		-texdir $(TLROOT) -scheme scheme-minimal
 
-	# fix what the installer did 'cause it sucks
+	# fix what the installer did 'cause it sucks (can't preserve symlinks)
 	rm -f $(TLROOT)/bin/custom/*
 	cd $(TLROOT)/bin/custom/ && \
 		for orig_file_path in $(ORIGINAL_BIN_DIR)/*; do \
@@ -98,11 +109,17 @@ texlive: texlive-setup cairo fontconfig freetype graphite2 harfbuzz icu4c libgd 
 			fi \
 		done
 
+	# fix texlive package manager
+	sed -i 's|do_cmd_and_check("|do_cmd_and_check("sudo |' $(TLROOT)/texmf-dist/scripts/texlive/tlmgr.pl
+
 	# remove original bin dir since the right binaries are the ones in TLROOT/bin/custom
 	rm -rf $(BUILD_STAGE)/texlive$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/bin
 
 	$(call AFTER_BUILD)
 endif
+
+texlive-install: texlive
+
 
 texlive-package: texlive-stage
 	# texlive.mk Package Structure
