@@ -9,4 +9,10 @@ Depends: libcairo2, fontconfig, libfreetype6, libgraphite2-3,
 Section: tex
 Priority: optional
 Homepage: http://www.tug.org/texlive/
-Description:
+Description: The entire texlive tree except for xindy.
+    to use latex engines the user has to run "sudo tlmgr install scheme-small"
+    and then "sudo fmtutil-sys --all".
+    Actually this installs more than the what is sctrictly necessary to run
+    latex engines but you will probably end up using a lot of this packages.
+    .
+    Warning: actually xelatex doesn't work but lualatex and pdflatex work fine.
