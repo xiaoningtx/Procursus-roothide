@@ -8,7 +8,7 @@ DEB_TEXLIVE_V   ?= $(TEXLIVE_VERSION)
 
 TLROOT=$(BUILD_STAGE)/texlive$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/share/texlive
 ORIGINAL_BIN_DIR=$(BUILD_STAGE)/texlive$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/bin
-TEXLIVE_INSTALL_ENV_NOCHECK=1
+TEXLIVE_INSTALL_ENV_NOCHECK=1 # avoid installer to check the env, it's just a warning and we don't need it
 
 ifneq ($(wildcard $(BUILD_WORK)/texlive/.CRLFtoLF_done),)
 texlive-setup: setup
@@ -26,8 +26,11 @@ texlive:
 	@echo "Using previously built texlive."
 else
 texlive: texlive-setup cairo fontconfig freetype graphite2 harfbuzz icu4c libgd libgmp10 libpixman libpaper libpng16 libx11 libxaw libmpfi mpfr4 potrace teckit zlib-ng zziplib
+	# just to clarify, in autotools convention we call "build" the
+	# system that is building the program, and "host" (iOS) the
+	# system that will run the program
 
-	# using the target AR instead of host AR
+	# using the host AR instead of build AR
 	sed -i "s|AR = ar|AR = @AR@|" $(BUILD_WORK)/texlive/libs/xpdf/Makefile.in
 	sed -i "s|ac_subst_vars='am__EXEEXT_FALSE|ac_subst_vars='AR\nam__EXEEXT_FALSE|" $(BUILD_WORK)/texlive/libs/xpdf/configure
 	
@@ -109,11 +112,11 @@ texlive: texlive-setup cairo fontconfig freetype graphite2 harfbuzz icu4c libgd 
 			fi \
 		done
 
-	# fix texlive package manager
-	perl -pe 's/(?<=do_cmd_and_check)\s+//g' $(TLROOT)/texmf-dist/scripts/texlive/tlmgr.pl > $(TLROOT)/texmf-dist/scripts/texlive/temp.pl
-	perl -pe 's/(?<=do_cmd_and_check)\s+//g' $(TLROOT)/texmf-dist/scripts/texlive/temp.pl > $(TLROOT)/texmf-dist/scripts/texlive/tlmgr.pl
+	# fix texlive package manager (it has to run all commands with sudo since it operates system wide)
+	# this will mess up some comments and indentations but I'd say that this is not a problem
+	perl -i -pe 's/(?<=do_cmd_and_check)\s+//g' $(TLROOT)/texmf-dist/scripts/texlive/tlmgr.pl
+	perl -i -pe 's/(?<=do_cmd_and_check)\s+//g' $(TLROOT)/texmf-dist/scripts/texlive/tlmgr.pl # yes we have to run it twice if you are better than me with regex please fix this
 	sed -i 's|do_cmd_and_check("|do_cmd_and_check("sudo |' $(TLROOT)/texmf-dist/scripts/texlive/tlmgr.pl
-	rm $(TLROOT)/texmf-dist/scripts/texlive/temp.pl
 
 	# remove original bin dir since the right binaries are the ones in TLROOT/bin/custom
 	rm -rf $(BUILD_STAGE)/texlive$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/bin
