@@ -118,14 +118,16 @@ texlive: texlive-setup cairo fontconfig freetype graphite2 harfbuzz icu4c libgd 
 	perl -i -pe 's/(?<=do_cmd_and_check)\s+//g' $(TLROOT)/texmf-dist/scripts/texlive/tlmgr.pl # yes we have to run it twice if you are better than me with regex please fix this
 	sed -i 's|do_cmd_and_check("|do_cmd_and_check("sudo |' $(TLROOT)/texmf-dist/scripts/texlive/tlmgr.pl
 
-	# remove original bin dir since the right binaries are the ones in TLROOT/bin/custom
-	rm -rf $(BUILD_STAGE)/texlive$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/bin
+	# replace the original binaries with links to the right ones in TLROOT/bin/custom
+	rm -f $(BUILD_STAGE)/texlive$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/bin/*
+	cd $(BUILD_STAGE)/texlive$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/bin/ && \
+		for bin in $(TLROOT)/bin/custom/*; do \
+			bin_name=$$(basename -- $$bin); \
+			ln -s $$(realpath -s --relative-to=. "$$bin") $$bin_name; \
+		done
 
 	$(call AFTER_BUILD)
 endif
-
-texlive-install: texlive
-
 
 texlive-package: texlive-stage
 	# texlive.mk Package Structure

@@ -10,9 +10,11 @@ Section: tex
 Priority: optional
 Homepage: http://www.tug.org/texlive/
 Description: The entire texlive tree except for xindy.
-    to use latex engines the user has to run "sudo tlmgr install scheme-small"
+    .
+    To use latex engines the user has to run "sudo tlmgr install scheme-small"
     and then "sudo fmtutil-sys --all".
     Actually this installs more than the what is sctrictly necessary to run
     latex engines but you will probably end up using a lot of this packages.
     .
-    Warning: actually xelatex doesn't work but lualatex and pdflatex work fine.
+    Warning: at the moment xelatex doesn't work but lualatex and pdflatex work
+    fine.
