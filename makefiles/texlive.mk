@@ -110,7 +110,10 @@ texlive: texlive-setup cairo fontconfig freetype graphite2 harfbuzz icu4c libgd 
 		done
 
 	# fix texlive package manager
+	perl -pe 's/(?<=do_cmd_and_check)\s+//g' $(TLROOT)/texmf-dist/scripts/texlive/tlmgr.pl > $(TLROOT)/texmf-dist/scripts/texlive/temp.pl
+	perl -pe 's/(?<=do_cmd_and_check)\s+//g' $(TLROOT)/texmf-dist/scripts/texlive/temp.pl > $(TLROOT)/texmf-dist/scripts/texlive/tlmgr.pl
 	sed -i 's|do_cmd_and_check("|do_cmd_and_check("sudo |' $(TLROOT)/texmf-dist/scripts/texlive/tlmgr.pl
+	rm $(TLROOT)/texmf-dist/scripts/texlive/temp.pl
 
 	# remove original bin dir since the right binaries are the ones in TLROOT/bin/custom
 	rm -rf $(BUILD_STAGE)/texlive$(MEMO_PREFIX)$(MEMO_SUB_PREFIX)/bin
