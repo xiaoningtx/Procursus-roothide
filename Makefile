@@ -507,7 +507,7 @@ CXXFLAGS_FOR_BUILD := $(CFLAGS_FOR_BUILD)
 ASFLAGS_FOR_BUILD  := $(CFLAGS_FOR_BUILD)
 LDFLAGS_FOR_BUILD  := $(CFLAGS_FOR_BUILD)
 
-else
+else # ($(shell sw_vers -productName),macOS)
 ifneq ($(MEMO_QUIET),1)
 $(warning Building on iOS)
 endif # ($(MEMO_QUIET),1)
@@ -524,7 +524,7 @@ CXXFLAGS_FOR_BUILD := $(CFLAGS_FOR_BUILD)
 ASFLAGS_FOR_BUILD  := $(CFLAGS_FOR_BUILD)
 LDFLAGS_FOR_BUILD  := $(CFLAGS_FOR_BUILD)
 
-endif
+endif # ($(shell sw_vers -productName),macOS)
 AR              != command -v ar
 LD              != command -v ld
 RANLIB          != command -v ranlib
@@ -536,7 +536,7 @@ OTOOL           != command -v otool
 I_N_T           != command -v install_name_tool
 LIBTOOL         != command -v libtool
 
-else
+else #ifeq ($(UNAME),Darwin)
 $(error Please use macOS, iOS, Linux, or FreeBSD to build)
 endif
 
@@ -833,13 +833,15 @@ EXTRACT_TAR = if [ ! -d $(BUILD_WORK)/$(3) ] || [ "$(4)" = "1" ]; then \
 
 DOWNLOAD_FILE = if [ ! -f "$(1)" ]; then \
 					echo "Downloading $(2) => $(1)"; \
+					TEMP_FILE=$$(mktemp); \
 					if [ -z "$$LIST" ]; then \
 						$(CURL) --output \
-							$(1) $(2) || exit 1; \
+							$$TEMP_FILE $(2) || exit 1; \
 					else \
 						$(CURL) --output \
-							$(1) $(2) || exit 1; \
+							$$TEMP_FILE $(2) || exit 1; \
 					fi; \
+					mv $$TEMP_FILE $(1); \
 				else echo "$(1) already downloaded."; fi
 
 DOWNLOAD_FILES = LIST="$$(echo $(2))"; \
