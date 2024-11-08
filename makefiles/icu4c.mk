@@ -20,7 +20,7 @@ else
 icu4c: .SHELLFLAGS=-O extglob -c
 icu4c: icu4c-setup
 	cd $(BUILD_WORK)/icu4c/host && ../source/configure \
-			$(BUILD_CONFIGURE_FLAGS); \
+		$(BUILD_CONFIGURE_FLAGS); \
 		$(MAKE) -C $(BUILD_WORK)/icu4c/host
 	cd $(BUILD_WORK)/icu4c/source && ./configure -C \
 		$(DEFAULT_CONFIGURE_FLAGS) \
