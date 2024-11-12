@@ -429,12 +429,6 @@ ifneq ($(MEMO_QUIET),1)
 $(warning Building on GNU Linux)
 endif # ($(MEMO_QUIET),1)
 
-TEST_INODE_1 = $(shell touch $(PWD)/.inode_test_file_1; stat -c %i $(PWD)/.inode_test_file_1; rm -f $(PWD)/.inode_test_file_1)
-TEST_INODE_2 = $(shell touch $(PWD)/.inode_test_file_2; stat -c %i $(PWD)/.inode_test_file_2; rm -f $(PWD)/.inode_test_file_2)
-ifeq ($(TEST_INODE_1), $(TEST_INODE_2))
-$(error "The file system where the build directory is located reuses inodes, fakeroot will not work correctly. You can move the build directory to a different type of file system for building.")
-endif
-
 TARGET_SYSROOT  ?= $(HOME)/cctools/SDK/$(BARE_PLATFORM).sdk
 MACOSX_SYSROOT  ?= $(HOME)/cctools/SDK/MacOSX.sdk
 

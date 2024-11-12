@@ -8,9 +8,18 @@ MACOSX_SDK_VERSION=11.3 #from https://github.com/phracker/MacOSX-SDKs/releases/t
 
 cd ~
 
-if ! eval $(echo "echo $PATH") ||  ; then
+if ! eval $(echo "echo $PATH") || echo "$PATH" | grep -qE '[[:space:]]|[^[:print:]]' ; then
     echo "*** your PATH contains special characters, please start a new shell with a clean PATH to build Procursus-roothide"
+    echo "$PATH"
     exit
+fi
+
+PROJDIR=$(dirname "$0")
+TEST_INODE_1=$(touch "$PROJDIR/.inode_test_file_1"; stat -c %i "$PROJDIR/.inode_test_file_1"; rm -f "$PROJDIR/.inode_test_file_1")
+TEST_INODE_2=$(touch "$PROJDIR/.inode_test_file_2"; stat -c %i "$PROJDIR/.inode_test_file_2"; rm -f "$PROJDIR/.inode_test_file_2")
+if [ "$TEST_INODE_1" = "$TEST_INODE_2" ]; then
+	echo "*** The file system where the build directory is located reuses inodes, fakeroot will not work correctly. You can move the build directory to a different type of file system for building."
+	exit
 fi
 
 if [ -d ~/cctools ]; then
