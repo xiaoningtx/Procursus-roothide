@@ -90,6 +90,8 @@ if [ ! -f ./cctools-port/.build_complete ]; then
     git clone --recursive https://github.com/tpoechtrager/cctools-port
 fi
 
+sed -i 's/HAVE_UTIMESAT/HAVE_UTIMENSAT/g' cctools-port/cctools/libstuff/writeout.c
+
 pushd cctools-port/usage_examples/ios_toolchain
 
 if [ ! -f ~/cctools-port/.build_complete ] || [ ! -d ./target/SDK/iPhoneOS$IOS_SDK_VERSION.sdk ]; then
