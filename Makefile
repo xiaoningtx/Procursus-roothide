@@ -835,7 +835,7 @@ DOWNLOAD_FILE = if [ ! -f "$(1)" ]; then \
 						$(CURL) --output \
 							$$TEMP_FILE $(2) || exit 1; \
 					fi; \
-					mv $$TEMP_FILE $(1); \
+					mkdir -p $$(dirname "$(1)") && mv $$TEMP_FILE "$(1)"; \
 				else echo "$(1) already downloaded."; fi
 
 DOWNLOAD_FILES = LIST="$$(echo $(2))"; \
